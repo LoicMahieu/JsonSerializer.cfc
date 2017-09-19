@@ -203,6 +203,16 @@ component
 
 	}
 
+	public void function testTabInNumeric() {
+		var serializer = new lib.JsonSerializer();
+		var tab = '	';
+		var input = { name: "#tab#12456" };
+
+		var serializedInput = serializer.serialize( input );
+
+		assertEquals(serializedInput, '{"name":"\t12456"}');
+	}
+
 
 	// ---
 	// PRIVATE METHODS.
