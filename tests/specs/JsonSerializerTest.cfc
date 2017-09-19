@@ -189,14 +189,14 @@ component
 
 	public void function testBuggySerialization() {
 
-		// This tests a bug introduced in ColdFusion 10.0.14 that incorrectly converts 
+		// This tests a bug introduced in ColdFusion 10.0.14 that incorrectly converts
 		// character strings into unicode escape sequences:
 		// --
 		// Read more: http://www.bennadel.com/blog/2842-serializejson-and-the-input-and-output-encodings-are-not-same-errors-in-coldfusion.htm
 		var input = "This value [ u+1234 ] is known to cause problems in ColdFusion.";
 
 		var serializedInput = serializer.serialize( input );
-		
+
 		var deserializedInput = deserializeJson( serializedInput );
 
 		assert( input == deserializedInput );
@@ -264,7 +264,7 @@ component
 
 		// Test the values.
 		assert( find( "true,true,false,true", serializedInput ) );
-		
+
 	}
 
 

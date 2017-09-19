@@ -42,7 +42,7 @@ component
 	// ---
 
 
-	// I define the given key without a type. This is here to provide key-casing without caring 
+	// I define the given key without a type. This is here to provide key-casing without caring
 	// about why type of data conversion takes place. Returns serializer.
 	public any function asAny( required string key ) {
 
@@ -112,7 +112,7 @@ component
 	/**
 	* I serialize the given input as JavaScript Object Notation (JSON) using the case-sensitive
 	* values defined in the key-list.
-	* 
+	*
 	* @output false
 	*/
 	public string function serialize( required any input ) {
@@ -143,7 +143,7 @@ component
 
 		if ( structKeyExists( fullKeyList, key ) ) {
 
-			throw( 
+			throw(
 				type = "DuplicateKey",
 				message = "The key [#key#] has already been defined within the serializer.",
 				detail = "The current key list is: #structKeyList( fullKeyList, ', ' )#"
@@ -158,16 +158,16 @@ component
 		// of the key so that it doesn't have to be recalculated each time the object is serialized.
 		fullKeyList[ key ] = serializeString( key );
 
-		// If we have a specific type, then add the hint to the full hint list as well. This will 
+		// If we have a specific type, then add the hint to the full hint list as well. This will
 		// allow us to quickly look up the pass-through data type hint during serialization.
 		// --
 		// NOTE: The reason we don't want to pass through "any" is that we want parent types to be
-		// able to "fall through" during the object traversal. If we added "any" to the type list, 
+		// able to "fall through" during the object traversal. If we added "any" to the type list,
 		// then it would always overwrite the parent data type.
 		if ( hint != "any" ) {
 
 			fullHintList[ key ] = hint;
-			
+
 		}
 
 		// Return this reference for method chaining.
@@ -176,26 +176,26 @@ component
 	}
 
 
-	// I walk the given object, writing the serialized value to the output (which is expected to 
+	// I walk the given object, writing the serialized value to the output (which is expected to
 	// be a content buffer).
 	// ---
-	// NOTE: THIS METHOD IS HUGE - this is on purpose. Since serialization is a rather intense 
-	// process, I am trying to cut out as much overhead as possible. In this case, we're cutting 
-	// out extra stack space by inlining and duplicating a lot of functionality. This is being done 
+	// NOTE: THIS METHOD IS HUGE - this is on purpose. Since serialization is a rather intense
+	// process, I am trying to cut out as much overhead as possible. In this case, we're cutting
+	// out extra stack space by inlining and duplicating a lot of functionality. This is being done
 	// at the COST of clarity and non-repetitive code.
 	private void function serializeInput(
 		required any input,
 		required string hint
 		) {
 
-		// Serialize the data base on the type of input. We are organizing this in terms of the 
-		// most commonly-used values first. The anticipation is that the vast majority of data 
-		// types will be simple values. 
+		// Serialize the data base on the type of input. We are organizing this in terms of the
+		// most commonly-used values first. The anticipation is that the vast majority of data
+		// types will be simple values.
 		if ( isSimpleValue( input ) ) {
 
 			if ( ( hint == "string" ) || ( hint == "any" ) ) {
 
-				// If the string appears to be numeric, then we have to prefix it to make sure 
+				// If the string appears to be numeric, then we have to prefix it to make sure
 				// ColdFusion doesn't accidentally convert it to a number.
 				if ( isNumeric( input ) ) {
 
@@ -221,8 +221,8 @@ component
 
 			} else if ( ( hint == "date" ) && ( isDate( input ) || isNumericDate( input ) ) ) {
 
-				// Write the date in ISO 8601 time string format. We're going to assume that the 
-				// date is already in the desired timezone. 
+				// Write the date in ISO 8601 time string format. We're going to assume that the
+				// date is already in the desired timezone.
 				writeOutput( """" & dateFormat( input, "yyyy-mm-dd" ) & "T" & timeFormat( input, "HH:mm:ss.l" ) & "Z""" );
 
 			} else {
@@ -236,7 +236,7 @@ component
 		} // END: isSimpleValue().
 
 
-		// I'm expecting the struct to be the next most common data type since it will likely be 
+		// I'm expecting the struct to be the next most common data type since it will likely be
 		// the container for the majority of data values.
 		if ( isStruct( input ) ) {
 
@@ -285,7 +285,7 @@ component
 
 					serializeInput( input[ key ], fullHintList[ key ] );
 
-				// If the given key is unknown, just pass through the most recent hint as 
+				// If the given key is unknown, just pass through the most recent hint as
 				// it may be defining the type for an entire structure.
 				} else {
 
@@ -398,7 +398,7 @@ component
 
 						serializeInput( input[ key ][ i ], fullHintList[ key ] );
 
-					// If the given key is unknown, just pass through the most recent hint as 
+					// If the given key is unknown, just pass through the most recent hint as
 					// it may be defining the type for an entire structure.
 					} else {
 
@@ -413,7 +413,7 @@ component
 			} // END: Row list.
 
 			writeOutput( "]" );
-			
+
 			return;
 
 		} // END: isQuery().
@@ -429,19 +429,19 @@ component
 	/**
 	* I serialize and write the given string to the current output context, escaping all appropriate
 	* characters for the JSON specification.
-	* 
+	*
 	* NOTE: We are using this manual-encoding process rather than the built-in serializeJson() function
 	* as there is a rather nasty bug that corrupts certain patterns in the output. Read more:
-	* 
+	*
 	* http://www.bennadel.com/blog/2842-serializejson-and-the-input-and-output-encodings-are-not-same-errors-in-coldfusion.htm
-	* 
+	*
 	* @input I am the string being serialized.
 	*/
 	private void function serializeInputString( required string input ) {
 
-		// While this may not be technically needed, this will ensure that we are not using any 
+		// While this may not be technically needed, this will ensure that we are not using any
 		// "undocumented features" of the language. If we explicitly cast to  a Java string, and
-		// something goes wrong due to odd type-casting, it's a ColdFusion bug, at that point, not 
+		// something goes wrong due to odd type-casting, it's a ColdFusion bug, at that point, not
 		// a logic error ;)
 		input = javaCast( "string", input );
 
@@ -454,7 +454,7 @@ component
 			var charCode = input.codePointAt( javaCast( "int", i - 1 ) );
 
 			// Check for the most common case first (normal characters).
-			if ( 
+			if (
 				( charCode >= 32 ) &&
 				( charCode != 34 ) &&
 				( charCode != 47 ) &&
@@ -470,7 +470,7 @@ component
 			} else if ( charCode == 8 ) {
 
 				writeOutput( "\b" );
-				
+
 			} else if ( charCode == 9 ) {
 
 				writeOutput( "\t" );
@@ -487,7 +487,7 @@ component
 
 				writeOutput( "\r" );
 
-			} else if ( 
+			} else if (
 				( charCode < 32 ) ||
 				( charCode == 8232 ) ||
 				( charCode == 8233 )
@@ -518,9 +518,9 @@ component
 
 
 	/**
-	* I serialize and return the given string, escaping all appropriate characters for the 
+	* I serialize and return the given string, escaping all appropriate characters for the
 	* JSON specification.
-	* 
+	*
 	* @input I am the string being serialized.
 	* @output false
 	*/
