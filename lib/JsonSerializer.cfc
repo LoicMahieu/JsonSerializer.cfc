@@ -1,6 +1,9 @@
 component
 	output = false
-	hint = "I provide a way to serialize complex ColdFusion data values as case-sensitive JavaScript Object Notation (JSON) strings."
+	hint = "
+		I provide a way to serialize complex ColdFusion data values as case-sensitive JavaScript Object Notation (JSON) strings.
+		Repo: https://github.com/bennadel/JsonSerializer.cfc
+	"
 	{
 
 	// I return the initialized component.
@@ -22,6 +25,11 @@ component
 		// These keys will NOT be used in serialization (ie. the key/value pairs will not be
 		// added to the serialized output).
 		blockedKeyList = {};
+
+		keyCaseType = 'lower';
+		// lower
+		// upper
+		// keep
 
 		// Return the initialized component.
 		return( this );
@@ -87,6 +95,14 @@ component
 	public any function exclude( required string key ) {
 
 		blockedKeyList[ key ] = true;
+
+		return( this );
+
+	}
+
+	public any function keyCase( required string type ) {
+
+		variables.keyCaseType = type;
 
 		return( this );
 
@@ -252,7 +268,13 @@ component
 				// the subsequent logic will be easier.
 				if ( ! structKeyExists( fullKeyList, key ) ) {
 
-					asAny( lcase( key ) );
+					if (keyCaseType == 'keep') {
+						asAny( key );
+					} else if (keyCaseType == 'upper') {
+						asAny( uCase( key ) );
+					} else {
+						asAny( lcase( key ) );
+					}
 
 				}
 
@@ -321,7 +343,13 @@ component
 
 				if ( ! structKeyExists( fullKeyList, key ) ) {
 
-					asAny( lcase( key ) );
+					if (keyCaseType == 'keep') {
+						asAny( key );
+					} else if (keyCaseType == 'upper') {
+						asAny( uCase( key ) );
+					} else {
+						asAny( lcase( key ) );
+					}
 
 				}
 
